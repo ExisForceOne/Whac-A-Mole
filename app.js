@@ -1,19 +1,23 @@
 //settings
-const minVisibleTime = 200;
+const minVisibleTime = 250;
 const maxVisibleTime = 1000;
-const nextVisibleBugDelay = 150;
+const nextBugDelay = 150;
+const gameTime = 3;
 
 //selectors
 const [...holes] = document.querySelectorAll(".grid-item");
-
-//event listeners
-holes.forEach((hole) => hole.addEventListener("click", hitDetection));
+const startBtn = document.querySelector(".start-btn");
+const scoreInfo = document.querySelector(".score");
+const timeInfo = document.querySelector(".time");
 
 //global variables
-let lastHole = null;
-let visibleTimeoutID = null;
+let timeLeft = gameTime;
+let timeLeftInterval = null;
+let visibleTimeout = null;
+let nextBugDelayTimeout = null;
+let score = 0;
 
-//game
+//functions
 const randomFromRange = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
 
 const randomHole = () => holes[randomFromRange(0, holes.length - 1)];
@@ -21,28 +25,50 @@ const randomTime = () => randomFromRange(minVisibleTime, maxVisibleTime);
 
 const showBug = (hole) => hole.classList.add("active");
 const hideBug = (hole) => hole.classList.remove("active");
+const showNextBugAfterDelay = () => (nextBugDelayTimeout = setTimeout(showRandomBug, nextBugDelay));
 
-const showAnotherBug = (time) => setTimeout(hitMe, time);
+const showRandomBug = () => {
+  const hole = randomHole();
+  showBug(hole);
+
+  visibleTimeout = setTimeout(() => {
+    hideBug(hole);
+    showNextBugAfterDelay();
+  }, randomTime());
+};
 
 function hitDetection() {
   const selectedHole = this;
 
   if (selectedHole.classList.contains("active")) {
     console.log("hit");
-    clearTimeout(visibleTimeoutID);
+    scoreInfo.textContent = ++score;
+    clearTimeout(visibleTimeout);
     hideBug(selectedHole);
-    showAnotherBug(nextVisibleBugDelay);
+    showNextBugAfterDelay();
   }
 }
 
-const hitMe = () => {
-  const hole = randomHole();
-  const visibleTime = randomTime();
+const startGame = () => {
+  showRandomBug();
+  timeInfo.textContent = timeLeft;
 
-  showBug(hole);
-
-  visibleTimeoutID = setTimeout(() => {
-    hideBug(hole);
-    showAnotherBug(visibleTime + nextVisibleBugDelay);
-  }, visibleTime);
+  timeLeftInterval = setInterval(() => {
+    timeInfo.textContent = --timeLeft;
+    if (!timeLeft) {
+      console.log("koniec");
+      clearGame();
+    }
+  }, 1000);
 };
+
+const clearGame = () => {
+  holes.forEach((hole) => hideBug(hole));
+  clearInterval(timeLeftInterval);
+  clearTimeout(visibleTimeout);
+  clearTimeout(nextBugDelayTimeout);
+};
+
+//event listeners
+holes.forEach((hole) => hole.addEventListener("click", hitDetection));
+startBtn.addEventListener("click", startGame);
