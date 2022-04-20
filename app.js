@@ -2,20 +2,25 @@
 const minVisibleTime = 250;
 const maxVisibleTime = 1000;
 const nextBugDelay = 150;
-const gameTime = 3;
+const gameTime = 70;
 
 //selectors
 const [...holes] = document.querySelectorAll(".grid-item");
 const startBtn = document.querySelector(".start-btn");
+const resetBtn = document.querySelector(".reset-btn");
 const scoreInfo = document.querySelector(".score");
 const timeInfo = document.querySelector(".time");
 
 //global variables
+let isRunning = false;
+let lastHole = null;
 let timeLeft = gameTime;
+let score = 0;
+
+//intervals
 let timeLeftInterval = null;
 let visibleTimeout = null;
 let nextBugDelayTimeout = null;
-let score = 0;
 
 //functions
 const randomFromRange = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
@@ -29,6 +34,14 @@ const showNextBugAfterDelay = () => (nextBugDelayTimeout = setTimeout(showRandom
 
 const showRandomBug = () => {
   const hole = randomHole();
+
+  if (lastHole === hole) {
+    lastHole = hole;
+    showRandomBug();
+    return;
+  }
+  lastHole = hole;
+
   showBug(hole);
 
   visibleTimeout = setTimeout(() => {
@@ -49,7 +62,14 @@ function hitDetection() {
   }
 }
 
+const changeButtons = () => {
+  isRunning = !isRunning;
+  startBtn.style.display = isRunning ? "none" : "block";
+  resetBtn.style.display = isRunning ? "block" : "none";
+};
+
 const startGame = () => {
+  changeButtons();
   showRandomBug();
   timeInfo.textContent = timeLeft;
 
@@ -63,7 +83,11 @@ const startGame = () => {
 };
 
 const clearGame = () => {
+  changeButtons();
   holes.forEach((hole) => hideBug(hole));
+  timeLeft = gameTime;
+  timeInfo.textContent = 0;
+  scoreInfo.textContent = score = 0;
   clearInterval(timeLeftInterval);
   clearTimeout(visibleTimeout);
   clearTimeout(nextBugDelayTimeout);
@@ -72,3 +96,4 @@ const clearGame = () => {
 //event listeners
 holes.forEach((hole) => hole.addEventListener("click", hitDetection));
 startBtn.addEventListener("click", startGame);
+resetBtn.addEventListener("click", clearGame);

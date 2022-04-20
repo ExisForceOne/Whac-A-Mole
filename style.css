@@ -7,6 +7,7 @@
 :root {
     --maxWidth: 800px;
     --green: #28a745;
+    --red: #dc3545;
 }
 
 html {
@@ -46,10 +47,16 @@ button {
     padding: 10px 0;
 }
 
-.start-btn {
+.start-btn,
+.reset-btn {
     background-color: var(--green);
     color: white;
     padding: 10px 20px;
+}
+
+.reset-btn {
+    background-color: var(--red);
+    display: none;
 }
 
 .board {
