@@ -2,14 +2,16 @@
 const minVisibleTime = 250;
 const maxVisibleTime = 1000;
 const nextBugDelay = 150;
-const gameTime = 70;
+const gameTime = 60;
 
 //selectors
 const [...holes] = document.querySelectorAll(".grid-item");
 const startBtn = document.querySelector(".start-btn");
 const resetBtn = document.querySelector(".reset-btn");
+
 const scoreInfo = document.querySelector(".score");
 const timeInfo = document.querySelector(".time");
+const personalBestInfo = document.querySelector(".personal-best");
 
 //global variables
 let isRunning = false;
@@ -68,32 +70,42 @@ const changeButtons = () => {
   resetBtn.style.display = isRunning ? "block" : "none";
 };
 
+const savePersonalBest = () => {
+  const personalBest = localStorage.getItem("PB");
+  if (score > personalBest) {
+    localStorage.setItem("PB", score);
+    personalBestInfo.textContent = score;
+  }
+};
+
 const startGame = () => {
   changeButtons();
   showRandomBug();
-  timeInfo.textContent = timeLeft;
 
   timeLeftInterval = setInterval(() => {
     timeInfo.textContent = --timeLeft;
-    if (!timeLeft) {
-      console.log("koniec");
-      clearGame();
-    }
+    !timeLeft ? clearGame() : null;
   }, 1000);
 };
 
 const clearGame = () => {
   changeButtons();
+  savePersonalBest();
   holes.forEach((hole) => hideBug(hole));
-  timeLeft = gameTime;
-  timeInfo.textContent = 0;
+  timeInfo.textContent = timeLeft = gameTime;
   scoreInfo.textContent = score = 0;
   clearInterval(timeLeftInterval);
   clearTimeout(visibleTimeout);
   clearTimeout(nextBugDelayTimeout);
 };
 
-//event listeners
-holes.forEach((hole) => hole.addEventListener("click", hitDetection));
-startBtn.addEventListener("click", startGame);
-resetBtn.addEventListener("click", clearGame);
+const initGame = () => {
+  const personalBest = localStorage.getItem("PB");
+  personalBestInfo.textContent = personalBest ? personalBest : 0;
+  timeInfo.textContent = timeLeft;
+  holes.forEach((hole) => hole.addEventListener("click", hitDetection));
+  startBtn.addEventListener("click", startGame);
+  resetBtn.addEventListener("click", clearGame);
+};
+
+initGame();
