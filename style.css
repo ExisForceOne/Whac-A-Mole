@@ -36,6 +36,7 @@ button {
 .menu {
     font-size: 1.5rem;
     background-color: white;
+    text-align: center;
 }
 
 .menu-wrapper {

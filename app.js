@@ -2,7 +2,7 @@
 const minVisibleTime = 250;
 const maxVisibleTime = 1000;
 const nextBugDelay = 150;
-const gameTime = 60;
+const gameTime = 3;
 
 //selectors
 const [...holes] = document.querySelectorAll(".grid-item");
