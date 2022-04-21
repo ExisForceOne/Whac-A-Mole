@@ -34,7 +34,7 @@ button {
 }
 
 .menu {
-    font-size: 1.5rem;
+    font-size: 1.3rem;
     background-color: white;
     text-align: center;
 }
@@ -115,6 +115,10 @@ button {
 @media (min-width: 800px) {
     :root {
         --maxWidth: 1200px;
+    }
+
+    .menu {
+        font-size: 1.7rem;
     }
     
     .pow {
