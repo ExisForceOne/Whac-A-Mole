@@ -61,10 +61,18 @@ button {
 }
 
 .board {
+    position: relative;
     display: flex;
     align-items: center;
     justify-content: center;
     flex: 1;
+}
+
+.pow {
+    position: absolute;
+    top: 0;
+    width: 150px;
+    opacity: 0;
 }
 
 .grid-container {
@@ -107,6 +115,10 @@ button {
 @media (min-width: 800px) {
     :root {
         --maxWidth: 1200px;
+    }
+    
+    .pow {
+        width: 250px;
     }
 
     .grid-container {

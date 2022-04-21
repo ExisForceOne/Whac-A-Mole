@@ -1,8 +1,9 @@
 //settings
 const minVisibleTime = 250;
 const maxVisibleTime = 1000;
-const nextBugDelay = 150;
-const gameTime = 3;
+const minDelayTime = 50;
+const maxDelayTime = 450;
+const gameTime = 30;
 
 //selectors
 const [...holes] = document.querySelectorAll(".grid-item");
@@ -12,6 +13,7 @@ const resetBtn = document.querySelector(".reset-btn");
 const scoreInfo = document.querySelector(".score");
 const timeInfo = document.querySelector(".time");
 const personalBestInfo = document.querySelector(".personal-best");
+const hitInfo = document.querySelector(".pow");
 
 //global variables
 let isRunning = false;
@@ -20,19 +22,18 @@ let timeLeft = gameTime;
 let score = 0;
 
 //intervals
-let timeLeftInterval = null;
-let visibleTimeout = null;
-let nextBugDelayTimeout = null;
+let [timeLeftInterval, visibleTimeout, nextBugDelayTimeout] = [null, null, null];
 
 //functions
 const randomFromRange = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
 
 const randomHole = () => holes[randomFromRange(0, holes.length - 1)];
-const randomTime = () => randomFromRange(minVisibleTime, maxVisibleTime);
+const randomVisibleTime = () => randomFromRange(minVisibleTime, maxVisibleTime);
+const randomDelayTime = () => randomFromRange(minDelayTime, maxDelayTime);
 
 const showBug = (hole) => hole.classList.add("active");
 const hideBug = (hole) => hole.classList.remove("active");
-const showNextBugAfterDelay = () => (nextBugDelayTimeout = setTimeout(showRandomBug, nextBugDelay));
+const showNextBugAfterDelay = () => (nextBugDelayTimeout = setTimeout(showRandomBug, randomDelayTime()));
 
 const showRandomBug = () => {
   const hole = randomHole();
@@ -49,20 +50,27 @@ const showRandomBug = () => {
   visibleTimeout = setTimeout(() => {
     hideBug(hole);
     showNextBugAfterDelay();
-  }, randomTime());
+  }, randomVisibleTime());
 };
 
 function hitDetection() {
   const selectedHole = this;
 
   if (selectedHole.classList.contains("active")) {
-    console.log("hit");
+    showHitInfo();
     scoreInfo.textContent = ++score;
     clearTimeout(visibleTimeout);
     hideBug(selectedHole);
     showNextBugAfterDelay();
   }
 }
+
+const showHitInfo = () => {
+  hitInfo.style.opacity = "1";
+  setTimeout(() => {
+    hitInfo.style.opacity = "0";
+  }, 350);
+};
 
 const changeButtons = () => {
   isRunning = !isRunning;
@@ -81,7 +89,7 @@ const savePersonalBest = () => {
 const startGame = () => {
   changeButtons();
   showRandomBug();
-
+  scoreInfo.textContent = 0;
   timeLeftInterval = setInterval(() => {
     timeInfo.textContent = --timeLeft;
     !timeLeft ? clearGame() : null;
@@ -92,8 +100,8 @@ const clearGame = () => {
   changeButtons();
   savePersonalBest();
   holes.forEach((hole) => hideBug(hole));
+  score = 0;
   timeInfo.textContent = timeLeft = gameTime;
-  scoreInfo.textContent = score = 0;
   clearInterval(timeLeftInterval);
   clearTimeout(visibleTimeout);
   clearTimeout(nextBugDelayTimeout);
