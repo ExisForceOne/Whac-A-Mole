@@ -92,13 +92,16 @@ const startGame = () => {
   scoreInfo.textContent = 0;
   timeLeftInterval = setInterval(() => {
     timeInfo.textContent = --timeLeft;
-    !timeLeft ? clearGame() : null;
+    if (!timeLeft) {
+      savePersonalBest();
+      clearGame();
+    }
   }, 1000);
 };
 
 const clearGame = () => {
   changeButtons();
-  savePersonalBest();
+
   holes.forEach((hole) => hideBug(hole));
   score = 0;
   timeInfo.textContent = timeLeft = gameTime;
