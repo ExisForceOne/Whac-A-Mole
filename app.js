@@ -112,7 +112,7 @@ const clearGame = () => {
 
 const initGame = () => {
   const personalBest = localStorage.getItem("PB");
-  personalBestInfo.textContent = personalBest ? personalBest : 0;
+  personalBestInfo.textContent = personalBest || 0;
   timeInfo.textContent = timeLeft;
   holes.forEach((hole) => hole.addEventListener("click", hitDetection));
   startBtn.addEventListener("click", startGame);
